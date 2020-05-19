@@ -1,0 +1,87 @@
+---
+output:
+  pdf_document: default
+  html_document: default
+---
+Regression Models Course Project
+=======================================
+
+## Executive Summary
+
+This is a report prepared as part of the coursework required for the Coursera Regression Models course. The instructions for this report assignment state as follows:
+
+You work for Motor Trend, a magazine about the automobile industry. Looking at a data set of a collection of cars, they are interested in exploring the relationship between a set of variables and miles per gallon (MPG) (outcome). They are particularly interested in the following two questions:
+
+- Is an automatic or manual transmission better for MPG?
+
+- Quantify the MPG difference between automatic and manual transmissions
+
+## Data Analysis
+
+First load the dataset mtcars and look at the first few observations.
+
+````{r}
+data("mtcars")
+head(mtcars)
+````
+
+Convert the transmission variable form 0 and 1 to automatic and manual transmission respectively.
+
+````{r}
+mtcars$am.type <- factor(mtcars$am, labels = c("Automatic", "Manual"))
+head(mtcars)
+````
+
+Now plot a boxplot with transmission type as factor.
+
+````{r}
+boxplot(mtcars$mpg ~ mtcars$am.type, col = c("red", "green"), xlab = "Transmission Type", ylab = "Miles per Gallon" )
+````
+
+It is clear from the boxplot that the mpg is better for manual transmission cars.
+
+## Regression Analysis
+
+Develop a regression model with mpg as the outcome and am.type as the factor variable.
+
+````{r}
+fit  <- lm(mpg ~ am.type, mtcars)
+summary(fit)
+````
+
+It can be clearly inferred that the p values are less than 0.05, so we reject our null hypothesis and conclude that the coeffecients are not zero.
+
+But at the same time R squared is 0.36, which means that 36% of the variation in the outcome variable is explained by the predictor variable. Thus, it it could be said that it is not a good model.
+
+Now let's perform analysis of variance test on the model where mpg is the outcome and rest of the variables are used as predictors.
+
+````{r}
+test <- aov(mpg ~ ., mtcars)
+summary(test)
+````
+
+From the above ANOVA test we can clearly see that variables such as cyl, disp, wt have p values less tha  0.05. thus, we can use these variables in addition to the am.type variable in the regression model.
+
+So, the new regression model can be defined as: -
+
+````{r}
+fit2 <- lm(mpg ~ am.type + cyl + disp + wt, mtcars)
+summary(fit2)
+````
+
+Now, it can be observed that the R squared value is 0.8327, which implies that almost 83% of the variation in the outcome variable is explained by the predictors. Also, the p values for cyl and wt are less than 0.05, suggesting that they are the confounding variables for the relationship between miles per galon and transmission type.
+
+## Residuals plot
+
+Now let's see of the model verifies all the assumptions
+
+````{r}
+par(mfrow = c(2,2))
+plot(fit2)
+````
+
+From the above residual plots we can clearly see that the residuals are normally distributed with some outliers in the data. It can also be seen that the residuals are homoscedastic in nature. 
+
+## Rmd Verification link
+
+The following link will take you to the Rmd file (uploaded on githud repository) which was used in order to make this pdf:- 
